@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style media="screen">
+    .container{
+      position: relative;
+    }
+    .circle-node{
+      position: absolute;
+      text-align: center;
+      display: inline-block;
+      width: 50px;
+      line-height: 50px;
+      border: 1px solid rgb(130, 149, 219);
+    }
+    .level:hover{
+      background-color: rgb(172, 218, 232);
+      transition: 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+  </div>
+  <script type="text/javascript">
+    var maxLevel
+    function BinaryTree () {
+      this.root = null
+      function NewNode (data, level) {
+        this.data = data || null
+        this.left = null
+        this.right = null
+        this.level = level || null
+      }
+      this.insert = function (key) {
+        var newNode = new NewNode(key)
+        if (this.root === null) {
+          newNode.level = 1
+          maxLevel = 1
+          this.root = newNode
+        } else {
+          _insertNode(this.root, newNode)
+        }
+      }
+      function _insertNode (node, newNode) {
+        if (node.data > newNode.data) {
+          if (node.left) {
+            _insertNode(node.left, newNode)
+          } else {
+            newNode.level = node.level + 1
+            maxLevel = node.level + 1 > maxLevel ? node.level + 1 : maxLevel
+            node.left = newNode
+          }
+        } else {
+          if (node.right) {
+            _insertNode(node.right, newNode)
+          } else {
+            newNode.level = node.level + 1
+            maxLevel = node.level + 1 > maxLevel ? node.level + 1 : maxLevel
+            node.right = newNode
+          }
+        }
+      }
+    }
+    // var list = [8, 3, 10, 1, 6, 14, 4, 7, 13]
+    // var list = new Array(10)
+    // for(var i = 0; i < list.length; i++) {
+    //   list[i] =  Math.floor(Math.random() * 100)
+    // }
+    var list = [23, 62, 95, 87, 28, 44, 48, 15, 34, 96, 29]
+    console.log(JSON.parse(JSON.stringify(list)))
+    var myTree = new BinaryTree()
+    list.forEach((item) => {
+      myTree.insert(item)
+    })
+    function preOrder(tree) {
+      var result = []
+      preFunc(tree.root)
+      return result
+      function preFunc (node) {
+        if (node) {
+          // console.log(node.data)
+          result.push(node.data)
+          if (!node.left && !node.right) {
+            return
+          }
+          preFunc(node.left)
+          preFunc(node.right)
+        } else {
+          return
+        }
+      }
+    }
+    function midOrder (tree) {
+      var result = []
+      midFunc(tree.root)
+      return result
+      function midFunc (node) {
+        if (!node.left && !node.right) {
+          result.push(node.data)
+          return
+        }
+
+        if (node.left) {
+          midFunc(node.left)
+        }
+        result.push(node.data)
+        if (node.right){
+          midFunc(node.right)
+        }
+      }
+    }
+    function lastOrder (tree) {
+      var result = []
+      lastFunc(tree.root)
+      return result
+      function lastFunc (node) {
+        if (!node.left && !node.right) {
+          result.push(node.data)
+          return
+        }
+        if (node.left) {
+          lastFunc(node.left)
+        }
+        if (node.right){
+          lastFunc(node.right)
+        }
+        result.push(node.data)
+      }
+    }
+    console.log(myTree)
+    function renderTree (myTree) {
+      console.log('maxLevel', maxLevel, Math.pow(2, maxLevel - 1))
+      var container = document.querySelector('.container')
+      if (myTree.root){
+        renderNode(myTree.root)
+      } else {
+        alert('it is empty tree')
+      }
+      function renderNode(node, parent, position) {
+        if (node.data) {
+          console.log(node.data)
+          var nodelevel = document.querySelector('.level' + node.level)
+          if (!nodelevel) {
+            nodelevel = document.createElement('div')
+            nodelevel.className = 'level' + node.level + ' level'
+            nodelevel.style.position = 'relative'
+            nodelevel.style.height = '50px'
+            container.appendChild(nodelevel)
+          }
+          var nodeElm = document.createElement('div')
+          nodeElm.className = 'circle-node'
+          nodeElm.innerText = node.data
+          node.elm = nodeElm
+          if (!parent) {
+            nodeElm.style.left = ((Math.pow(2, maxLevel - 1 - node.level) - 0.5) * 50).toString() + 'px'
+          } else {
+            var parentLeft = parseInt(window.getComputedStyle(parent.elm).left)
+            var chLeft = position === 'left' ? parentLeft - (Math.pow(2, maxLevel - 1 - node.level) * 50) :  parentLeft + (Math.pow(2, maxLevel - 1 - node.level) * 50)
+            nodeElm.style.left = chLeft + 'px'
+          }
+          nodelevel.appendChild(nodeElm)
+        }
+        if (!node.left && !node.right) {
+          return
+        } else {
+          if (node.left) {
+            renderNode(node.left, node, 'left')
+          }
+          if (node.right) {
+            renderNode(node.right, node, 'right')
+          }
+        }
+      }
+    }
+    renderTree(myTree)
+    // console.log(preOrder(myTree))
+    // console.log(midOrder(myTree))
+    // console.log(lastOrder(myTree))
+  </script>
+</body>
+</html>
